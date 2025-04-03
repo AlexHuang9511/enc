@@ -1,4 +1,5 @@
 #!/usr/bin/bash
+#!/bin/bash
 
 if [ $# -lt 3 ]
 then
