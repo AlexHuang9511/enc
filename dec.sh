@@ -2,7 +2,7 @@
 
 if [ $# -lt 3 ]
 then
-  echo "enc.sh [iter] [file in] [file out]"
+  echo "dec.sh [iter] [file in] [file out]"
   exit 1
 fi
 
