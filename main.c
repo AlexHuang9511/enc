@@ -1,36 +1,41 @@
 #include <errno.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/_types/_pid_t.h>
 #include <sys/errno.h>
+#include <sys/wait.h>
 #include <unistd.h>
 
-int main(int argc, char *argv[]) {
+int encode(char* iter, char* in, char* out, char* path) {
+
+  pid_t child = fork();
+
+  if (child == 0) {
+    printf("child\n");
+
+    int code = execl(path, "openssl", "enc", "-aes-256-cbc", "-e", "-iter", iter, "-salt", "-in", in, "-out", out, NULL);
+
+    if (code != -1) {
+      return errno;
+    }
+  }
+ return 0;
+}
+
+int main() {
 
   printf("bruh\n");
 
-  pid_t child = fork();
-  printf("child pid: %d\n", child);
+  char* path = "/usr/bin/openssl";
 
-  if (child == 0) {
-    printf("childish bruh\n");
-    int code = execl("/bin/ls", "ls", "-l", "-a", "-h", NULL);
-    printf("exit code: %i\n", code);
+  int exitCode = encode("1000", "test.txt", "test.enc", path);
 
-    switch (errno) {
-    case EACCES:
-      printf("access error\n");
-      break;
-    case ENOENT:
-      printf("path does not exist\n");
-      break;
-    case EFAULT:
-      printf("fault\n");
-      break;
-    default:
-      printf("other error\n");
-      printf("errno: %i\n", errno);
-    }
-  }
+  int status;
+  wait(&status);
+
+  printf("errno: %i\n", exitCode);
+
+
 
   return 0;
 }
