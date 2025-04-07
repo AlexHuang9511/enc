@@ -1,32 +1,22 @@
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/_types/_ssize_t.h>
 #include <sys/errno.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
 #define PATH "/usr/bin/openssl";
-#define FILE_ENC "file.enc"
-#define FILE_TXT "file.txt"
 
-int encode() {
+int encode(char *iter, char *in, char *out) {
 
   pid_t child = fork();
 
   if (child == 0) {
     printf("child\n");
-    char *path = PATH;
-    char *in = FILE_ENC;
-    char *out = FILE_TXT;
-    char iter[4];
+    char* path = PATH;
 
-    printf("Enter iter: ");
-    fflush(stdout);
-    fflush(stdin);
-    read(STDIN_FILENO, iter, sizeof(iter));
-
-    int code = execl(path, "openssl", "enc", "-aes-256-cbc", "-e", "-iter",
-                     iter, "-salt", "-in", in, "-out", out, NULL);
+    int code = execl(path, "openssl", "enc", "-aes-256-cbc", "-e", "-iter", iter, "-salt", "-in", in, "-out", out, NULL);
 
     if (code != -1) {
       return errno;
@@ -35,23 +25,15 @@ int encode() {
   return 0;
 }
 
-int decode(char *iter, char *in, char *out) {
+int decode(char *iter, char* in, char* out) {
 
   pid_t child = fork();
 
   if (child == 0) {
     printf("child\n");
-    char *path = PATH;
-    char *out = FILE_TXT;
-    char *in = FILE_ENC;
-    char iter[4];
+    char* path = PATH;
 
-    printf("Enter iter: ");
-    fflush(stdout);
-    read(STDIN_FILENO, iter, sizeof(iter));
-
-    int code = execl(path, "openssl", "enc", "-aes-256-cbc", "-d", "-iter",
-                     iter, "-in", in, "-out", out, NULL);
+    int code = execl(path, "openssl", "enc", "-aes-256-cbc", "-d", "-iter", iter, "-in", in, "-out", out, NULL);
 
     if (code != -1) {
       return errno;
@@ -61,24 +43,36 @@ int decode(char *iter, char *in, char *out) {
 }
 
 int main() {
-  char buf[1];
+  char buf[2];
+  char iter[5];
+  int c; 
+  
+  printf("Enter iter: ");
+  fflush(stdout);
+
+  fgets(iter, sizeof(iter), stdin);
+  //:TODO finish 
+
+  while((c = getchar()) != '\n' && c != EOF);
 
   printf("1 - encrypt\n");
   printf("2 - decrypt\n");
   printf("3 - add\n");
   printf("-> ");
   fflush(stdout);
-  fflush(stdin);
-  fgets(buf, sizeof(buf), stdin);
-  fflush(stdin);
+  //:TODO use fgets to get menu choice
+
+  while((c = getchar()) != '\n' && c != EOF);
 
   printf("input: --%s--\n", buf);
+  printf("iter: --%s--\n", iter);
+
 
   if (strcmp(buf, "1") == 0) {
 
     printf("encode\n");
 
-    int exitCode = encode();
+    int exitCode = encode("1000", "file.txt", "file.enc");
     int status;
     wait(&status);
     if (exitCode != 0) {
@@ -89,7 +83,7 @@ int main() {
 
     printf("decode\n");
 
-    int exitCode = decode("1000", "test.txt", "test.enc");
+    int exitCode = decode("1000", "file.txt", "file.enc");
     int status;
     wait(&status);
     if (exitCode != 0) {
@@ -103,7 +97,9 @@ int main() {
     printf("unknown: '%s'\n", buf);
   }
 
-  // printf("errno: %i\n", exitCode);
+
+
+  //printf("errno: %i\n", exitCode);
 
   return 0;
 }
