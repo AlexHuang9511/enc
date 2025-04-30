@@ -43,7 +43,6 @@ int decode(char *iter, char* in, char* out) {
       return -1;
     }
 
-
     int code = execl(path, "openssl", "enc", "-aes-256-cbc", "-d", "-iter", iter, "-in", in, "-out", out, NULL);
 
     if (code != -1) {
@@ -97,7 +96,7 @@ int main() {
 
     printf("decode\n");
 
-    int exitCode = decode("1000", "file.txt", "file.enc");
+    int exitCode = decode("1000", "file.enc", "file.txt");
     int status;
     wait(&status);
     if (exitCode != 0) {
@@ -105,7 +104,6 @@ int main() {
     }
   } else if (strcmp(buf, "3") == 0) {
 
-    printf("add\n");
     printf("add\n");
 
   } else {

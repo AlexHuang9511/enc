@@ -1,4 +1,5 @@
 #define NOB_IMPLEMENTATION
+#define NOB_EXPERIMENTAL_DELETE_OLD
 #include "nob.h"
 
 int main(int argc, char **argv) {
