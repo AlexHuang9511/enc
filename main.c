@@ -16,6 +16,11 @@ int encode(char *iter, char *in, char *out) {
     printf("child\n");
     char* path = PATH;
 
+    if (access(in, F_OK) != 0) {
+      printf("%s does not exist.\n", in);
+      return -1;
+    }
+
     int code = execl(path, "openssl", "enc", "-aes-256-cbc", "-e", "-iter", iter, "-salt", "-in", in, "-out", out, NULL);
 
     if (code != -1) {
@@ -32,6 +37,12 @@ int decode(char *iter, char* in, char* out) {
   if (child == 0) {
     printf("child\n");
     char* path = PATH;
+
+    if (access(in, F_OK) != 0) {
+      printf("%s does not exist.\n", in);
+      return -1;
+    }
+
 
     int code = execl(path, "openssl", "enc", "-aes-256-cbc", "-d", "-iter", iter, "-in", in, "-out", out, NULL);
 
@@ -60,9 +71,12 @@ int main() {
   printf("3 - add\n");
   printf("-> ");
   fflush(stdout);
-  //:TODO use fgets to get menu choice
 
-  while((c = getchar()) != '\n' && c != EOF);
+  fgets(buf, sizeof(iter), stdin);
+
+  buf[1] = '\0';
+
+  //while((c = getchar()) != '\n' && c != EOF);
 
   printf("input: --%s--\n", buf);
   printf("iter: --%s--\n", iter);
@@ -91,6 +105,7 @@ int main() {
     }
   } else if (strcmp(buf, "3") == 0) {
 
+    printf("add\n");
     printf("add\n");
 
   } else {
