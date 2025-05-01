@@ -7,6 +7,8 @@
 #include <unistd.h>
 
 #define PATH "/usr/bin/openssl";
+#define ENC "file.enc"
+#define TXT "file.txt"
 
 int encode(char *iter, char *in, char *out) {
 
@@ -85,7 +87,7 @@ int main() {
 
     printf("encode\n");
 
-    int exitCode = encode("1000", "file.txt", "file.enc");
+    int exitCode = encode(iter, TXT, ENC);
     int status;
     wait(&status);
     if (exitCode != 0) {
@@ -96,7 +98,7 @@ int main() {
 
     printf("decode\n");
 
-    int exitCode = decode("1000", "file.enc", "file.txt");
+    int exitCode = decode(iter, ENC, TXT);
     int status;
     wait(&status);
     if (exitCode != 0) {
@@ -109,10 +111,6 @@ int main() {
   } else {
     printf("unknown: '%s'\n", buf);
   }
-
-
-
-  //printf("errno: %i\n", exitCode);
 
   return 0;
 }
